@@ -1,16 +1,21 @@
 class ShoppingList {
     groceries = [];
+
+    addItem(item) {
+        this.groceries = this.groceries.concat({ id: this.genId(), name: item });
+    }
+
+    removeItem(item){
+        this.groceries = this.groceries.filter(i => i.id !== item);
+    }
+    findItems(item){
+        return this.groceries.filter(element => element.name.includes(item));
+    }
+    genId() {
+        return this.groceries.length === 0 ? 1 : (Math.max(...this.groceries.map(v => v.id)) + 1);
+    }
 }
 
-ShoppingList.prototype.addItem = function (item) {
-    this.groceries = this.groceries.concat(item);
-}
-ShoppingList.prototype.removeItem = function (item) {
-    this.groceries = this.groceries.filter(i => i !== item);
-}
-ShoppingList.prototype.findItems = function (item) {
-    return this.groceries.filter(element => element.includes(item));
-}
 const myList = new ShoppingList();
 
 //init data
@@ -25,32 +30,31 @@ const search = document.getElementById("btn-search");
 const divBack = document.getElementById("back");
 
 function deleted(item) {
-    myList.removeItem(item.value);
+    myList.removeItem(item);
     this.render();
 }
 
-function back(){
+function back() {
     this.render();
     field.value = "";
-    divBack.innerHTML ="";
+    divBack.innerHTML = "";
 }
 
 search.onclick = () => {
     if (field.value.length > 0) {
         const list = myList.findItems(field.value);
         if (myList.groceries.length > 0) {
-            divBack.innerHTML ="<button type='button' onclick='back()'>back</button>";
+            divBack.innerHTML = "<button type='button' onclick='back()'>back</button>";
             ulElem.innerHTML = "";
             list.forEach(item => {
                 const itemView = document.createElement("li");
-                itemView.innerHTML = item +
-                    ` <button type="button" id="${item}" value="${item}" onclick="deleted(${item})">Delete</button>`;
+                itemView.innerHTML = item.name +
+                    ` <button type="button" onclick="deleted(${item.id})">Delete</button>`;
                 ulElem.appendChild(itemView);
             })
         } else alert("The items cannot be found !");
 
     } else alert("Field cannot be empty !");
-    console.log(myList.groceries);
 }
 
 btn.onclick = () => {
@@ -59,14 +63,15 @@ btn.onclick = () => {
         field.value = "";
         this.render();
     } else alert("The item cannot be empty !");
+
 }
 
 render = () => {
     ulElem.innerHTML = "";
     myList.groceries.forEach(item => {
         const itemView = document.createElement("li");
-        itemView.innerHTML = item +
-            ` <button type="button" id="${item}" value="${item}" onclick="deleted(${item})">Delete</button>`;
+        itemView.innerHTML = item.name +
+            ` <button type="button" onclick="deleted(${item.id})">Delete</button>`;
         ulElem.appendChild(itemView);
     })
 }
